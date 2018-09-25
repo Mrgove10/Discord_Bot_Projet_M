@@ -28,11 +28,17 @@ client.on("ready", () => {
 });
 
 client.on("message", async message => {
-  if (!message.author.bot){
+
+  var Emoji_Oui = message.guild.emojis.find(x => x.name === "oui");
+
+  if (message.isMentioned(client.users.get('494062611810484224'))) {
+    var rep = ["euhhh oui", "euhhh non"];
+    message.reply(rep[getRandomInt(2)]);
+  }
+
+  if (!message.author.bot) {
     console.log("Message recu : " + message.content); //debug
   }
-  
-  var Emoji_Oui = message.guild.emojis.find(x => x.name === "oui");
 
   if (message.author.bot) return; //si le message est vide
 
@@ -62,18 +68,16 @@ client.on("message", async message => {
   }
 
   if (command === "oui") {
-    
+
     var i = getRandomInt(phraseObj.ListPhrase.length);
-    if(i == lastrandom){ //evite que deux phrase se repete a la suite
-       i = getRandomInt(phraseObj.ListPhrase.length);
+    if (i == lastrandom) { //evite que deux phrase se repete a la suite
+      i = getRandomInt(phraseObj.ListPhrase.length);
       message.channel.send(phraseObj.ListPhrase[i] + `${Emoji_Oui}`);
-      
-    }
-    else
-    {
+
+    } else {
       message.channel.send(phraseObj.ListPhrase[i] + `${Emoji_Oui}`);
     }
-    
+
     var lastrandom = i
   }
 
@@ -88,20 +92,23 @@ client.on("message", async message => {
     var nowtime = new Date(); //date actuel 
     var version = JsonPackage.version; //recuperation de la version de l'appli
 
-    
-    var m = await message.channel.send("Ping en cours...");//envoie du message
+
+    var m = await message.channel.send("Ping en cours..."); //envoie du message
     //Mofification du message
     m.edit(`
-    ----- MeliusBot v${version} -----
-    Phrases : Macha & Leo
-    Bot : Adrien
-    Temps depuis le dernier démarrage : ${uptime}
-    Heure server : ${nowtime}
-    Latence Acces : ${m.createdTimestamp - message.createdTimestamp}ms
-    Latence API : ${Math.round(client.ping)}ms
-    Je suis Open Source : <https://github.com/Mrgove10/Discord_Bot_Projet_M> !
-   `);
+        ----- MeliusBot v${version} -----
+        Phrases : Macha & Leo
+        Bot : Adrien
+        Temps depuis le dernier démarrage : ${uptime}
+        Heure server : ${nowtime}
+        Latence Acces : ${m.createdTimestamp - message.createdTimestamp}ms
+        Latence API : ${Math.round(client.ping)}ms
+        Je suis Open Source : <https://github.com/Mrgove10/Discord_Bot_Projet_M> !
+        `)
   }
+
+
+
 });
 
 client.login(config.token);
