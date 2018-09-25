@@ -28,7 +28,10 @@ client.on("ready", () => {
 });
 
 client.on("message", async message => {
-  console.log("Message recu : " + message.content); //debug
+  if (!message.author.bot){
+    console.log("Message recu : " + message.content); //debug
+  }
+  
   var Emoji_Oui = message.guild.emojis.find(x => x.name === "oui");
 
   if (message.author.bot) return; //si le message est vide
@@ -39,7 +42,7 @@ client.on("message", async message => {
   const command = args.shift().toLowerCase();
 
   if (command === "help" || command === "?" || command === "aide") {
-    message.channel.send(`Toute les commandes doivent etre prifixé par "+m"
+    message.channel.send(`Toute les commandes doivent etre prifixé par "/m"
     Les commandes disponible sont: 
     - ? / Help / Aide : Aides sur les commandes  
     - Ping : Pong!
@@ -64,6 +67,7 @@ client.on("message", async message => {
     if(i == lastrandom){ //evite que deux phrase se repete a la suite
        i = getRandomInt(phraseObj.ListPhrase.length);
       message.channel.send(phraseObj.ListPhrase[i] + `${Emoji_Oui}`);
+      
     }
     else
     {
@@ -95,7 +99,7 @@ client.on("message", async message => {
     Heure server : ${nowtime}
     Latence Acces : ${m.createdTimestamp - message.createdTimestamp}ms
     Latence API : ${Math.round(client.ping)}ms
-    Lien Github : <https://github.com/Mrgove10/Discord_Bot_Projet_M>, je suis open Source !
+    Je suis Open Source : <https://github.com/Mrgove10/Discord_Bot_Projet_M> !
    `);
   }
 });
