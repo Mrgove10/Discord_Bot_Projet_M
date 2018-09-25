@@ -1,8 +1,11 @@
-const phraseObj = require("./phrase.json")
+//Packets
 const Discord = require("discord.js");
-const config = require("./config.json");
 const schedule = require('node-schedule');
 
+//Files
+const phraseObj = require("./phrase.json")
+const config = require("./config.json");
+const JsonPackage = require('.././package.json');
 const client = new Discord.Client();
 
 client.on("ready", () => {
@@ -13,15 +16,13 @@ client.on("ready", () => {
   //#region envoie automatique
   //https://www.npmjs.com/package/node-schedule
   var j = schedule.scheduleJob('0 45 7 * * *', function () {
-    client.channels.get("387249474625601537").send('euhhh oui, Bonjour, bone chournéé');
+    client.channels.get("387249474625601537").send('euhhh oui, Bonjour, bonne chournéé');
   });
-  var j = schedule.scheduleJob('0 00 23 * * *', function () {
+  var j = schedule.scheduleJob('0 45 21 * * *', function () {
     client.channels.get("387249474625601537").send('euhhh oui, Bonne nuit, demain caféé douceur');
   });
   //#endregion
 });
-
-
 
 client.on("message", async message => {
   console.log("message received : " + message.content);
@@ -64,22 +65,24 @@ client.on("message", async message => {
   }
 
   if (command === "about") {
+
+    var time = process.uptime(); //temps depuis le demararge
+    var uptime = (time + "").toHHMMSS(); //conversion en lisible
+    var nowtime = new Date(); //date actuel 
+    var version = JsonPackage.version; //recuperation de la version de l'appli
+
     
-        var time = process.uptime();
-        var uptime = (time + "").toHHMMSS();
-    
-    //var nodeversion : lol();
-    var nowtime = new Date();
-    const m = await message.channel.send("Chargement");
+    var m = await message.channel.send("Ping en cours...");//envoie du message
+    //Mofification du message
     m.edit(`
+    ----- MeliusBot v${version} -----
     Phrases : Macha & Leo
     Bot : Adrien
-    Version Node : 
     Temps depuis le dernier redemarage : ${uptime}
     Heure server : ${nowtime}
     Latence : ${m.createdTimestamp - message.createdTimestamp}ms
     Latence API : ${Math.round(client.ping)}ms
-    Lien Github : ${Math.round(client.ping)} , Je suis open Source !
+    Lien Github : <https://github.com/Mrgove10/Discord_Bot_Projet_M>, je suis open Source !
    `);
   }
 });
@@ -92,10 +95,14 @@ function getRandomInt(max) {
 
 String.prototype.toHHMMSS = function () {
   var sec_num = parseInt(this, 10); // don't forget the second param
+  var days = Math.floor(sec_num / (3600 * 24));
   var hours = Math.floor(sec_num / 3600);
   var minutes = Math.floor((sec_num - (hours * 3600)) / 60);
   var seconds = sec_num - (hours * 3600) - (minutes * 60);
 
+  if (24 < 10) {
+    days = "0" + days;
+  }
   if (hours < 10) {
     hours = "0" + hours;
   }
@@ -105,6 +112,6 @@ String.prototype.toHHMMSS = function () {
   if (seconds < 10) {
     seconds = "0" + seconds;
   }
-  var time = hours + ':' + minutes + ':' + seconds;
+  var time = days + ":" + hours + ':' + minutes + ':' + seconds;
   return time;
 }
