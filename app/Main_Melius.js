@@ -8,6 +8,9 @@ const config = require("./config.json");
 const JsonPackage = require('.././package.json');
 const client = new Discord.Client();
 
+//variables
+var lastrandom = 0
+
 client.on("ready", () => {
   console.log(`Bot has started, with ${client.users.size} users, in ${client.channels.size} channels of ${client.guilds.size} guilds.`);
 
@@ -25,8 +28,8 @@ client.on("ready", () => {
 });
 
 client.on("message", async message => {
-  console.log("message received : " + message.content);
-  var ayy = message.guild.emojis.find("name", "oui");
+  console.log("Message recu : " + message.content); //debug
+  var Emoji_Oui = message.guild.emojis.find(x => x.name === "oui");
 
   if (message.author.bot) return; //si le message est vide
 
@@ -40,10 +43,10 @@ client.on("message", async message => {
     Les commandes disponible sont: 
     - ? / Help / Aide : Aides sur les commandes  
     - Ping : Pong!
-    - Musique : c'est LA musique !
-    - Oui : euhhh oui chez la frase culte
-    - Shitbook : renvoie le lien vers le Yearbook
-    - About : informations diverse
+    - Musique : C'est LA musique !
+    - Oui : Euhhh oui chez la fraze culte
+    - Shitbook : Lien vers le Yearbook
+    - About : Lnformations diverses
     `);
   }
 
@@ -56,8 +59,18 @@ client.on("message", async message => {
   }
 
   if (command === "oui") {
+    
     var i = getRandomInt(phraseObj.ListPhrase.length);
-    message.channel.send(phraseObj.ListPhrase[i] + `${ayy}`);
+    if(i == lastrandom){ //evite que deux phrase se repete a la suite
+       i = getRandomInt(phraseObj.ListPhrase.length);
+      message.channel.send(phraseObj.ListPhrase[i] + `${Emoji_Oui}`);
+    }
+    else
+    {
+      message.channel.send(phraseObj.ListPhrase[i] + `${Emoji_Oui}`);
+    }
+    
+    var lastrandom = i
   }
 
   if (command === "shitbook") {
@@ -78,9 +91,9 @@ client.on("message", async message => {
     ----- MeliusBot v${version} -----
     Phrases : Macha & Leo
     Bot : Adrien
-    Temps depuis le dernier redemarage : ${uptime}
+    Temps depuis le dernier démarrage : ${uptime}
     Heure server : ${nowtime}
-    Latence : ${m.createdTimestamp - message.createdTimestamp}ms
+    Latence Acces : ${m.createdTimestamp - message.createdTimestamp}ms
     Latence API : ${Math.round(client.ping)}ms
     Lien Github : <https://github.com/Mrgove10/Discord_Bot_Projet_M>, je suis open Source !
    `);
