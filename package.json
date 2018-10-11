@@ -1,13 +1,12 @@
 {
   "name": "Melius",
-  "version": "1.2.0",
+  "version": "1.2.6",
   "description": "Bot debile de Meliush",
   "main": "app/Main_Melius.js",
   "scripts": {
     "start": "node app/Main_Melius.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-
   "author": "Adrien R",
   "license": "mit",
   "dependencies": {

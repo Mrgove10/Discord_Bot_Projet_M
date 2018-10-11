@@ -18,19 +18,25 @@ client.on("ready", () => {
 
   //#region envoie automatique
   //https://www.npmjs.com/package/node-schedule
-  var j = schedule.scheduleJob('0 45 7 * * *', function () {
+  var j = schedule.scheduleJob('0 55 7 * * *', function () {
     client.channels.get("387249474625601537").send('euhhh oui, Bonjour, bonne chournéé');
   });
-  var j = schedule.scheduleJob('0 45 21 * * *', function () {
+  var k = schedule.scheduleJob('0 45 21 * * *', function () {
     client.channels.get("387249474625601537").send('euhhh oui, Bonne nuit, demain caféé douceur');
   });
+  var l = schedule.scheduleJob('0 15 8 * * 3', function () {
+    client.channels.get("387249474625601537").send("", {
+      file: "./app/media/wednesday.jpg" // 
+    });
+  });
+
   //#endregion
 });
 
 client.on("message", async message => {
 
   var Emoji_Oui = message.guild.emojis.find(x => x.name === "oui");
-
+  
   if (message.isMentioned(client.users.get('494062611810484224'))) {
     var rep = ["euhhh oui", "euhhh non"];
     message.reply(rep[getRandomInt(2)]);
@@ -55,7 +61,7 @@ client.on("message", async message => {
     - Musique : C'est LA musique !
     - Oui : Euhhh oui chez la fraze culte
     - Shitbook : Lien vers le Yearbook
-    - About : Lnformations diverses
+    - About : Informations diverses
     `);
   }
 
@@ -124,7 +130,7 @@ String.prototype.toHHMMSS = function () {
   var minutes = Math.floor((sec_num - (hours * 3600)) / 60);
   var seconds = sec_num - (hours * 3600) - (minutes * 60);
 
-  if (24 < 10) {
+  if (days < 10) {
     days = "0" + days;
   }
   if (hours < 10) {
