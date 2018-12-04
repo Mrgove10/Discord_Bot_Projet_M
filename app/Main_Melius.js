@@ -8,7 +8,7 @@ const config = require("./config.json");
 const JsonPackage = require('.././package.json');
 const client = new Discord.Client();
 
-//variables
+//Variables
 var lastrandom = 0
 client.on("ready", () => {
   console.log(`Bot has started, with ${client.users.size} users, in ${client.channels.size} channels of ${client.guilds.size} guilds.`);
@@ -104,23 +104,19 @@ client.on("message", async message => {
     var nowtime = new Date(); //date actuel 
     var version = JsonPackage.version; //recuperation de la version de l'appli
 
-
     var m = await message.channel.send("Ping en cours..."); //envoie du message
     //Mofification du message
     m.edit(`
-        ----- MeliusBot v${version} -----
-        Phrases : Macha & Leo
-        Bot : Adrien
-        Temps depuis le dernier démarrage : ${uptime}
-        Heure server : ${nowtime}
-        Latence Acces : ${m.createdTimestamp - message.createdTimestamp}ms
-        Latence API : ${Math.round(client.ping)}ms
-        Je suis Open Source : <https://github.com/Mrgove10/Discord_Bot_Projet_M> !
-        `)
+    ----- MeliusBot v${version} -----
+    Phrases : Macha & Leo
+    Bot : Adrien
+    Temps depuis le dernier démarrage : ${uptime}
+    Heure server : ${nowtime}
+    Latence Acces : ${m.createdTimestamp - message.createdTimestamp}ms
+    Latence API : ${Math.round(client.ping)}ms
+    Je suis Open Source : <https://github.com/Mrgove10/Discord_Bot_Projet_M> !
+    `)
   }
-
-
-
 });
 
 client.login(config.token);
