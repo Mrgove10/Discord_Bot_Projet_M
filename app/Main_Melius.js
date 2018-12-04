@@ -10,33 +10,39 @@ const client = new Discord.Client();
 
 //variables
 var lastrandom = 0
-
 client.on("ready", () => {
   console.log(`Bot has started, with ${client.users.size} users, in ${client.channels.size} channels of ${client.guilds.size} guilds.`);
 
-  client.user.setActivity(`Hacker la bank`); //met a jour le "playing whit"
+  client.user.setActivity(`Hacker le bank`); //met a jour le "playing whit"
 
   //#region envoie automatique
   //https://www.npmjs.com/package/node-schedule
-  var j = schedule.scheduleJob('0 55 7 * * *', function () {
+  schedule.scheduleJob('0 55 7 * * *', function () {
     client.channels.get("387249474625601537").send('euhhh oui, Bonjour, bonne chournéé');
   });
-  var k = schedule.scheduleJob('0 45 21 * * *', function () {
+  
+  schedule.scheduleJob('0 45 21 * * *', function () {
     client.channels.get("387249474625601537").send('euhhh oui, Bonne nuit, demain caféé douceur');
   });
-  var l = schedule.scheduleJob('0 15 8 * * 3', function () {
+
+  schedule.scheduleJob('0 15 8 * * 3', function () {
     client.channels.get("387249474625601537").send("", {
       file: "./app/media/wednesday.jpg" // 
     });
   });
 
+  schedule.scheduleJob('* * * 1 * *', function () {
+    var mi = makeid();
+    client.user.setActivity(`Hacker le bank : ` + mi); //met a jour le "playing whit"
+    console.log(makeid());
+  });
   //#endregion
 });
 
 client.on("message", async message => {
 
   var Emoji_Oui = message.guild.emojis.find(x => x.name === "oui");
-  
+  /*message.react(Emoji_Oui);*/
   if (message.isMentioned(client.users.get('494062611810484224'))) {
     var rep = ["euhhh oui", "euhhh non"];
     message.reply(rep[getRandomInt(2)]);
@@ -45,7 +51,7 @@ client.on("message", async message => {
   if (!message.author.bot) {
     console.log("Message recu : " + message.content); //debug
   }
-
+  
   if (message.author.bot) return; //si le message est vide
 
   if (message.content.indexOf(config.prefix) !== 0) return; // si la commande c'est pas au debut
@@ -144,4 +150,14 @@ String.prototype.toHHMMSS = function () {
   }
   var time = days + ":" + hours + ':' + minutes + ':' + seconds;
   return time;
+}
+
+function makeid() {
+  var text = "";
+  var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+
+  for (var i = 0; i < 5; i++)
+    text += possible.charAt(Math.floor(Math.random() * possible.length));
+
+  return text;
 }
