@@ -22,10 +22,10 @@ client.on("ready", () => {
 
   //envoie automatique du matin
   schedule.scheduleJob('0 55 7 * * *', function () {
-    client.channels.get("387249474625601537").send('euhhh oui, Bonjour, bonne chournéé 
+    client.channels.get("387249474625601537").send(`euhhh oui, Bonjour, bonne chournéé 
 	Euhh oui la blague : 
 	Pas control aujourd'huii maiss : 
-');
+`);
   });
   
   //envoie automatique du soir
