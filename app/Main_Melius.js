@@ -22,7 +22,10 @@ client.on("ready", () => {
 
   //envoie automatique du matin
   schedule.scheduleJob('0 55 7 * * *', function () {
-    client.channels.get("387249474625601537").send('euhhh oui, Bonjour, bonne chournéé');
+    client.channels.get("387249474625601537").send('euhhh oui, Bonjour, bonne chournéé 
+	Euhh oui la blague : 
+	Pas control aujourd'huii maiss : 
+');
   });
   
   //envoie automatique du soir
@@ -38,7 +41,7 @@ client.on("ready", () => {
   });
 
   //changement automatique du playing whit
-  schedule.scheduleJob('* * * 1 * *', function () {
+  schedule.scheduleJob('* * * 5 * *', function () {
     var id = makeid();
     var idd = makeid();
     client.user.setActivity(id + ` Hacker le bank ` + idd); //met a jour le "playing whit"
@@ -60,7 +63,7 @@ client.on("message", async message => {
   //si le bot est mentionner il repond oui ou non
   if (message.isMentioned(client.users.get('494062611810484224'))) {
     var rep = ["euhhh oui", "euhhh non", "euhhh peut-etre" ];
-    message.reply(rep[getRandomInt(2)]);
+    message.reply(rep[getRandomInt(3)]);
   }
 
   //si le message est vide
