@@ -8,6 +8,12 @@ const config = require("./config.json");
 const JsonPackage = require('.././package.json');
 const client = new Discord.Client();
 
+const scheduledTask = require('./scheduled-task');
+const jsdom = require('jsdom');
+const request = require('request-promise-native');
+const moment = require('moment');
+moment.locale('fr');
+
 //Variables
 var lastrandom = 0
 client.on("ready", () => {
@@ -22,10 +28,7 @@ client.on("ready", () => {
 
   //envoie automatique du matin
   schedule.scheduleJob('0 55 7 * * *', function () {
-    client.channels.get("387249474625601537").send(`euhhh oui, Bonjour, bonne chournéé 
-	Euhh oui la blague : 
-	Pas control aujourd'huii maiss : 
-`);
+    client.channels.get("387249474625601537").send(`euhhh oui, Bonjour, bonne chournéé`);
   });
   
   //envoie automatique du soir
@@ -47,6 +50,10 @@ client.on("ready", () => {
     client.user.setActivity(id + ` Hacker le bank ` + idd); //met a jour le "playing whit"
     console.log(makeid());
   });
+
+  scheduledTask.jokeOfTheDayTask();
+  scheduledTask.saveDataTask();
+  scheduledTask.compareSchedulesTask();
   //#endregion
 });
 
@@ -67,13 +74,13 @@ client.on("message", async message => {
   }
 
   //si le message est vide
-  if (message.author.bot) return; 
+  if (message.author.bot) return;
 
-   // si la commande c'est pas au debut
+  // si la commande c'est pas au debut
   if (message.content.indexOf(config.prefix) !== 0) return;
 
   //recupere les arguments puis la met en minucule
-  const args = message.content.slice(config.prefix.length).trim().split(/ +/g);
+  const args = message.content.slice('2').trim().split(/ +/g);
   const command = args.shift().toLowerCase();
 
   //Help commande
@@ -86,6 +93,11 @@ client.on("message", async message => {
     - Oui : Euhhh oui chez la fraze culte
     - Shitbook : Lien vers le Yearbook
     - About : Informations diverses
+    - today : Emploi du temps du jour
+    - tomorrow : Emploi du temps de demain
+    - week : Emploi du temps de la semaine
+    - nextweek : Emploi du temps de la semaine prochaine
+    - infos : Infos concernant le bot de gestion de l'emploi du temps
     `);
   }
 
@@ -141,6 +153,32 @@ client.on("message", async message => {
     Je suis Open Source : <https://github.com/Mrgove10/Discord_Bot_Projet_M> !
     `)
   }
+
+  const today = moment();
+  let date;
+  let msg = '';
+
+  switch (message.content) {
+    case '/m today':
+      processForOneFixedDay(today, msg, message);
+      break;
+    case '/m tomorrow':
+      date = today.clone();
+      date.date(date.date() + 1);
+      processForOneFixedDay(date, msg, message);
+      break;
+    case '/m week':
+      date = today.clone();
+      processForAWeekFixedDate(date, msg, message);
+      break;
+    case '/m nextweek':
+      date = today.clone();
+      date.weekday(7);
+      processForAWeekFixedDate(date, msg, message);
+      break;
+    case '/m infos':
+      message.channel.send('Ce bot discord à pour objectif d\'éviter au __maximum__ d\'utiliser ce fabuleux outil qu\'est ~~je vous pisse dessus sans même vous faire croire qu\'il pleut~~ BEECOME.\n\nCe que je sais faire :\n\n/m today\n/m tomorrow\n/m week\n/m nextweek\n/m infos\n\nJe vous préviens également de chaque changement dans l\'emplois du temps sur les 2 prochaines semaines !   :muscle::muscle:\nAlors, elle est pas belle la vie ?   :heart_eyes:\n\nJe suis __open source__ ! : Github https://github.com/MiniJez/Discord-bot-displaying-epsi-calendar-changes\nAuteur : Edouard CLISSON.');
+  }
 });
 
 //Logins the client
@@ -185,3 +223,96 @@ function makeid() {
 
   return text;
 }
+
+//Functions relative to epsi calendar behavior
+async function getData (url) {
+  return request(url);
+}
+
+function getLessonInfos (htmlBody, msg, date) {
+  const { JSDOM } = jsdom;
+  const dom = new JSDOM(htmlBody);
+  const $ = (require('jquery'))(dom.window);
+  console.log('hip');
+  let dayOfWeek = moment(date).format('dddd');
+  dayOfWeek = firstLetterToUpper(dayOfWeek);
+  let month = moment(date).format('MMMM');
+  month = firstLetterToUpper(month);
+
+  const tab = $('.Ligne');
+
+  for (let i = 0; i < tab.length; i++) {
+      var dateLesson = `${dayOfWeek} ${date.date()} ${month}`;
+      const matiere = $($(tab[i]).find('.Matiere')).html();
+      const debut = $($(tab[i]).find('.Debut')).html();
+      const fin = $($(tab[i]).find('.Fin')).html();
+      const prof = $($(tab[i]).find('.Prof')).html();
+      const salle = $($(tab[i]).find('.Salle')).html();
+
+      msg += `${dateLesson} : **${matiere}** de __${debut}__ à __${fin}__ en salle __${salle}__ avec **${prof}**\n`;
+  }
+
+  if (tab.length === 0) {
+      msg += `${dayOfWeek} ${date.date()} ${month} : Aucun cours prévu !\n`;
+  }
+
+  return msg;
+}
+
+function getUrl (day, month, year) {
+  return `http://edtmobilite.wigorservices.net/WebPsDyn.aspx?Action=posETUD&serverid=i&tel=edouard.clisson&date=${month}/${day}/${year}%208:00`;
+}
+
+function sendMessage (message, msg) {
+  message.channel.send(msg);
+}
+
+function firstLetterToUpper (string) {
+  return string.charAt(0).toUpperCase() + string.slice(1);
+}
+
+function splitMessage (msg) {
+  const halfLength = Math.floor(msg.length / 2);
+  const startMsg = msg.slice(0, halfLength);
+  const endMsg = msg.slice(halfLength, msg.length);
+
+  const splittedMsg = [];
+
+  splittedMsg.push(startMsg);
+  splittedMsg.push(endMsg);
+
+  return splittedMsg;
+}
+
+async function processForOneFixedDay (date, msg, message) {
+  const url = getUrl(date.date(), date.month() + 1, date.year());
+  const htmlBody = await getData(url);
+  msg = getLessonInfos(htmlBody, msg, date);
+
+  sendMessage(message, msg);
+}
+
+async function processForAWeekFixedDate (date, msg, message) {
+  for (let i = 0; i < 5; i++) {
+      date.weekday(i);
+      const url = getUrl(date.date(), date.month() + 1, date.year());
+      const htmlBody = await getData(url);
+      msg = getLessonInfos(htmlBody, msg, date) + '\n';
+  }
+
+  if (msg.length > 2000) {
+      const splittedMsg = splitMessage(msg);
+
+      splittedMsg.forEach(str => {
+          sendMessage(message, str);
+      });
+  } else {
+      sendMessage(message, msg);
+  }
+}
+
+module.exports.client = client;
+module.exports.getData = getData;
+module.exports.getUrl = getUrl;
+module.exports.firstLetterToUpper = firstLetterToUpper;
+module.exports.splitMessage = splitMessage;
