@@ -54,6 +54,8 @@ client.on("ready", () => {
   scheduledTask.jokeOfTheDayTask();
   scheduledTask.saveDataTask();
   scheduledTask.compareSchedulesTask();
+  scheduledTask.tomorrowScheduleTask();
+  scheduledTask.todayScheduleTask();
   //#endregion
 });
 
@@ -233,7 +235,6 @@ function getLessonInfos (htmlBody, msg, date) {
   const { JSDOM } = jsdom;
   const dom = new JSDOM(htmlBody);
   const $ = (require('jquery'))(dom.window);
-  console.log('hip');
   let dayOfWeek = moment(date).format('dddd');
   dayOfWeek = firstLetterToUpper(dayOfWeek);
   let month = moment(date).format('MMMM');
@@ -314,5 +315,6 @@ async function processForAWeekFixedDate (date, msg, message) {
 module.exports.client = client;
 module.exports.getData = getData;
 module.exports.getUrl = getUrl;
+module.exports.getLessonInfos = getLessonInfos;
 module.exports.firstLetterToUpper = firstLetterToUpper;
 module.exports.splitMessage = splitMessage;

@@ -25,11 +25,7 @@ async function jokeOfTheDayTask () {
         joke = joke.replace(new RegExp('<br>', 'g'), '');
         joke = joke.replace(new RegExp('&nbsp;', 'g'), '');
 
-        bot.client.channels.forEach(channel => {
-            if (channel.type === 'text') {
-                bot.client.channels.get(channel.id).send(`:poop:   Joke of the day !   :joy:   =>   ${title}\n\n${joke}`);
-            }
-        })
+        bot.client.channels.get('554923621643190279').send(`:poop:   Joke of the day !   :joy:   =>   ${title}\n\n${joke}`);
     });
 
     task.start();
@@ -63,15 +59,11 @@ async function compareSchedulesTask () {
             if (msg.length > 2000) {
                 const splittedMsg = bot.splitMessage(msg);
 
-                bot.client.channels.forEach(channel => {
-                    if (channel.type === 'text') {
-                        splittedMsg.forEach(str => {
-                            bot.client.channels.get(channel.id).send(`@everyone Changement dans l'emplois du temps !\n\n${str}`);
-                        });
-                    }
+                splittedMsg.forEach(str => {
+                    bot.client.channels.get('554923621643190279').send(`@everyone Changement dans l'emplois du temps !\n\n${str}`);
                 })
             } else {
-                bot.client.channels.get(channel.id).send(`@everyone Changement dans l'emplois du temps !\n\n${msg}`);
+                bot.client.channels.get('554923621643190279').send(`@everyone Changement dans l'emplois du temps !\n\n${msg}`);
             }
 
             save2WeekInLocalData();
@@ -87,6 +79,37 @@ async function saveDataTask () {
     const task = cron.schedule('0 3 * * *', async () => {
         save2WeekInLocalData();
     });
+
+    task.start();
+}
+
+async function tomorrowScheduleTask () {
+    const task = cron.schedule('0 21 * * *', async () => {
+        const today = moment();
+        const tomorrow = today.clone().date(today.date() + 1);
+        let msg = '';
+
+        const url = bot.getUrl(tomorrow.date(), tomorrow.month() + 1, tomorrow.year());
+        const htmlBody = await bot.getData(url);
+        msg = bot.getLessonInfos(htmlBody, msg, tomorrow);
+
+        bot.client.channels.get('554923621643190279').send(msg);
+    })
+
+    task.start();
+}
+
+async function todayScheduleTask () {
+    const task = cron.schedule('30 7 * * *', async () => {
+        const today = moment();
+        let msg = '';
+
+        const url = bot.getUrl(today.date(), today.month() + 1, today.year());
+        const htmlBody = await bot.getData(url);
+        msg = bot.getLessonInfos(htmlBody, msg, tomorrow);
+
+        bot.client.channels.get('554923621643190279').send(msg);
+    })
 
     task.start();
 }
@@ -153,3 +176,5 @@ function fetchDomElement (schedule, htmlBody, date) {
 module.exports.jokeOfTheDayTask = jokeOfTheDayTask;
 module.exports.saveDataTask = saveDataTask;
 module.exports.compareSchedulesTask = compareSchedulesTask;
+module.exports.tomorrowScheduleTask = tomorrowScheduleTask;
+module.exports.todayScheduleTask = todayScheduleTask;
