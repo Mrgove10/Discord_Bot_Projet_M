@@ -26,6 +26,7 @@ async function jokeOfTheDayTask () {
         joke = joke.replace(new RegExp('&nbsp;', 'g'), '');
 
         bot.client.channels.get('554923621643190279').send(`:poop:   Joke of the day !   :joy:   =>   ${title}\n\n${joke}`);
+        bot.client.channels.get('546711751672987674').send(`:poop:   Joke of the day !   :joy:   =>   ${title}\n\n${joke}`);
     });
 
     task.start();
@@ -61,9 +62,11 @@ async function compareSchedulesTask () {
 
                 splittedMsg.forEach(str => {
                     bot.client.channels.get('554923621643190279').send(`@everyone Changement dans l'emplois du temps !\n\n${str}`);
+                    bot.client.channels.get('546711751672987674').send(`@everyone Changement dans l'emplois du temps !\n\n${str}`);
                 })
             } else {
                 bot.client.channels.get('554923621643190279').send(`@everyone Changement dans l'emplois du temps !\n\n${msg}`);
+                bot.client.channels.get('546711751672987674').send(`@everyone Changement dans l'emplois du temps !\n\n${msg}`);
             }
 
             save2WeekInLocalData();
@@ -94,6 +97,7 @@ async function tomorrowScheduleTask () {
         msg = bot.getLessonInfos(htmlBody, msg, tomorrow);
 
         bot.client.channels.get('554923621643190279').send(msg);
+        bot.client.channels.get('546711751672987674').send(msg);
     })
 
     task.start();
@@ -109,6 +113,7 @@ async function todayScheduleTask () {
         msg = bot.getLessonInfos(htmlBody, msg, tomorrow);
 
         bot.client.channels.get('554923621643190279').send(msg);
+        bot.client.channels.get('546711751672987674').send(msg);
     })
 
     task.start();
