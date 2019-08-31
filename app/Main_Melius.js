@@ -3,7 +3,7 @@ const Discord = require("discord.js");
 const schedule = require('node-schedule');
 
 //Files
-const phraseObj = require("./phrase.json") 
+const phraseObj = require("./phrase.json")
 const config = require("./config.json");
 const JsonPackage = require('.././package.json');
 const client = new Discord.Client();
@@ -21,7 +21,7 @@ client.on("ready", () => {
   console.log(`Bot has started, with ${client.users.size} users, in ${client.channels.size} channels of ${client.guilds.size} guilds.`);
 
   //Met a jour le playing whit au lancement
-  client.user.setActivity(`Hacker le bank`); 
+  client.user.setActivity(`Hacker le bank`);
 
   //#region 
   //envoie automatique (https://www.npmjs.com/package/node-schedule)
@@ -30,7 +30,7 @@ client.on("ready", () => {
   schedule.scheduleJob('0 55 7 * * *', function () {
     client.channels.get("387249474625601537").send(`euhhh oui, Bonjour, bonne chournéé`);
   });
-  
+
   //envoie automatique du soir
   schedule.scheduleJob('0 45 21 * * *', function () {
     client.channels.get("387249474625601537").send('euhhh oui, Bonne nuit, demain caféé douceur');
@@ -63,15 +63,15 @@ client.on("ready", () => {
 client.on("message", async message => {
   //Debug
   if (!message.author.bot) { //if the message is not from the bot
-    console.log("Message recu : " + message.content); 
+    console.log("Message recu : " + message.content);
   }
 
   //emoji oui
   var Emoji_Oui = message.guild.emojis.find(x => x.name === "oui");
-  
+
   //si le bot est mentionner il repond oui ou non
   if (message.isMentioned(client.users.get('494062611810484224'))) {
-    var rep = ["euhhh oui", "euhhh non", "euhhh peut-etre" ];
+    var rep = ["euhhh oui", "euhhh non", "euhhh peut-etre"];
     message.reply(rep[getRandomInt(3)]);
   }
 
@@ -227,11 +227,11 @@ function makeid() {
 }
 
 //Functions relative to epsi calendar behavior
-async function getData (url) {
+async function getData(url) {
   return request(url);
 }
 
-function getLessonInfos (htmlBody, msg, date) {
+function getLessonInfos(htmlBody, msg, date) {
   const { JSDOM } = jsdom;
   const dom = new JSDOM(htmlBody);
   const $ = (require('jquery'))(dom.window);
@@ -243,36 +243,36 @@ function getLessonInfos (htmlBody, msg, date) {
   const tab = $('.Ligne');
 
   for (let i = 0; i < tab.length; i++) {
-      var dateLesson = `${dayOfWeek} ${date.date()} ${month}`;
-      const matiere = $($(tab[i]).find('.Matiere')).html();
-      const debut = $($(tab[i]).find('.Debut')).html();
-      const fin = $($(tab[i]).find('.Fin')).html();
-      const prof = $($(tab[i]).find('.Prof')).html();
-      const salle = $($(tab[i]).find('.Salle')).html();
+    var dateLesson = `${dayOfWeek} ${date.date()} ${month}`;
+    const matiere = $($(tab[i]).find('.Matiere')).html();
+    const debut = $($(tab[i]).find('.Debut')).html();
+    const fin = $($(tab[i]).find('.Fin')).html();
+    const prof = $($(tab[i]).find('.Prof')).html();
+    const salle = $($(tab[i]).find('.Salle')).html();
 
-      msg += `${dateLesson} : **${matiere}** de __${debut}__ à __${fin}__ en salle __${salle}__ avec **${prof}**\n`;
+    msg += `${dateLesson} : **${matiere}** de __${debut}__ à __${fin}__ en salle __${salle}__ avec **${prof}**\n`;
   }
 
   if (tab.length === 0) {
-      msg += `${dayOfWeek} ${date.date()} ${month} : Aucun cours prévu !\n`;
+    msg += `${dayOfWeek} ${date.date()} ${month} : Aucun cours prévu !\n`;
   }
 
   return msg;
 }
 
-function getUrl (day, month, year) {
+function getUrl(day, month, year) {
   return `http://edtmobilite.wigorservices.net/WebPsDyn.aspx?Action=posETUD&serverid=i&tel=edouard.clisson&date=${month}/${day}/${year}%208:00`;
 }
 
-function sendMessage (message, msg) {
+function sendMessage(message, msg) {
   message.channel.send(msg);
 }
 
-function firstLetterToUpper (string) {
+function firstLetterToUpper(string) {
   return string.charAt(0).toUpperCase() + string.slice(1);
 }
 
-function splitMessage (msg) {
+function splitMessage(msg) {
   const halfLength = Math.floor(msg.length / 2);
   const startMsg = msg.slice(0, halfLength);
   const endMsg = msg.slice(halfLength, msg.length);
@@ -285,7 +285,7 @@ function splitMessage (msg) {
   return splittedMsg;
 }
 
-async function processForOneFixedDay (date, msg, message) {
+async function processForOneFixedDay(date, msg, message) {
   const url = getUrl(date.date(), date.month() + 1, date.year());
   const htmlBody = await getData(url);
   msg = getLessonInfos(htmlBody, msg, date);
@@ -293,22 +293,22 @@ async function processForOneFixedDay (date, msg, message) {
   sendMessage(message, msg);
 }
 
-async function processForAWeekFixedDate (date, msg, message) {
+async function processForAWeekFixedDate(date, msg, message) {
   for (let i = 0; i < 5; i++) {
-      date.weekday(i);
-      const url = getUrl(date.date(), date.month() + 1, date.year());
-      const htmlBody = await getData(url);
-      msg = getLessonInfos(htmlBody, msg, date) + '\n';
+    date.weekday(i);
+    const url = getUrl(date.date(), date.month() + 1, date.year());
+    const htmlBody = await getData(url);
+    msg = getLessonInfos(htmlBody, msg, date) + '\n';
   }
 
   if (msg.length > 2000) {
-      const splittedMsg = splitMessage(msg);
+    const splittedMsg = splitMessage(msg);
 
-      splittedMsg.forEach(str => {
-          sendMessage(message, str);
-      });
+    splittedMsg.forEach(str => {
+      sendMessage(message, str);
+    });
   } else {
-      sendMessage(message, msg);
+    sendMessage(message, msg);
   }
 }
 

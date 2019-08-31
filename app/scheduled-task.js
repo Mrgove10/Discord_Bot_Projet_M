@@ -6,7 +6,7 @@ const cron = require('node-cron');
 const jsdom = require('jsdom');
 const fs = require('fs');
 
-async function jokeOfTheDayTask () {
+async function jokeOfTheDayTask() {
     const task = cron.schedule('15 7 * * *', async () => {
         const htmlBody = await bot.getData('http://blague.dumatin.fr/');
 
@@ -32,7 +32,7 @@ async function jokeOfTheDayTask () {
     task.start();
 }
 
-async function compareSchedulesTask () {
+async function compareSchedulesTask() {
     const task = cron.schedule('*/30 6-17 * * *', async () => {
         const data = fs.readFileSync('./app/data/schedules.json');
         const savedData = JSON.parse(data);
@@ -76,7 +76,7 @@ async function compareSchedulesTask () {
     task.start();
 }
 
-async function saveDataTask () {
+async function saveDataTask() {
     save2WeekInLocalData();
 
     const task = cron.schedule('0 3 * * *', async () => {
@@ -86,7 +86,7 @@ async function saveDataTask () {
     task.start();
 }
 
-async function tomorrowScheduleTask () {
+async function tomorrowScheduleTask() {
     const task = cron.schedule('0 21 * * *', async () => {
         const today = moment();
         const tomorrow = today.clone().date(today.date() + 1);
@@ -103,7 +103,7 @@ async function tomorrowScheduleTask () {
     task.start();
 }
 
-async function todayScheduleTask () {
+async function todayScheduleTask() {
     const task = cron.schedule('30 7 * * *', async () => {
         const today = moment();
         let msg = '';
@@ -119,7 +119,7 @@ async function todayScheduleTask () {
     task.start();
 }
 
-async function save2WeekInLocalData () {
+async function save2WeekInLocalData() {
     let schedule = { 'data': [] };
 
     const today = moment();
@@ -131,7 +131,7 @@ async function save2WeekInLocalData () {
     });
 }
 
-async function fetchData (date, dayOfWeek, schedule) {
+async function fetchData(date, dayOfWeek, schedule) {
     for (let j = dayOfWeek; j < 5; j++) {
         date.weekday(j);
         const url = bot.getUrl(date.date(), date.month() + 1, date.year());
@@ -143,7 +143,7 @@ async function fetchData (date, dayOfWeek, schedule) {
     return schedule;
 }
 
-function fetchDomElement (schedule, htmlBody, date) {
+function fetchDomElement(schedule, htmlBody, date) {
     const { JSDOM } = jsdom;
     const dom = new JSDOM(htmlBody);
     const $ = (require('jquery'))(dom.window);
