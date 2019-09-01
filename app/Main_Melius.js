@@ -23,8 +23,30 @@ client.on("ready", () => {
   //Met a jour le playing whit au lancement
   client.user.setActivity(`Hacker le bank`);
 
-  //#region 
   //envoie automatique (https://www.npmjs.com/package/node-schedule)
+
+  //joke of the day
+  schedule.scheduleJob('0 15 7 * * *', function () {
+    scheduledTask.jokeOfTheDayTask();
+  });
+
+  //dave data
+  schedule.scheduleJob('0 0 3 * * *', function () {
+    scheduledTask.saveDataTask();
+  });
+
+  //compare schedules
+  schedule.scheduleJob('0 */30 6-17 * * *', function () {
+    scheduledTask.compareSchedulesTask();
+  });
+
+  schedule.scheduleJob('0 15 7 * * *', function () {
+    scheduledTask.jokeOfTheDayTask();
+  });
+
+  schedule.scheduleJob('0 15 7 * * *', function () {
+    scheduledTask.jokeOfTheDayTask();
+  });
 
   //envoie automatique du matin
   schedule.scheduleJob('0 55 7 * * *', function () {
@@ -44,19 +66,18 @@ client.on("ready", () => {
   });
 
   //changement automatique du playing whit
-  schedule.scheduleJob('* * * 5 * *', function () {
+  schedule.scheduleJob('* * * 30 * *', function () {
     var id = makeid();
     var idd = makeid();
     client.user.setActivity(id + ` Hacker le bank ` + idd); //met a jour le "playing whit"
     console.log(makeid());
   });
 
-  scheduledTask.jokeOfTheDayTask();
-  scheduledTask.saveDataTask();
-  scheduledTask.compareSchedulesTask();
-  scheduledTask.tomorrowScheduleTask();
+  // scheduledTask.jokeOfTheDayTask();
+  // scheduledTask.saveDataTask();
+  // scheduledTask.compareSchedulesTask();
+  // scheduledTask.tomorrowScheduleTask();
   scheduledTask.todayScheduleTask();
-  //#endregion
 });
 
 //for each message

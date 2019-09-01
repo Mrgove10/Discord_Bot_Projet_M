@@ -7,7 +7,7 @@ const jsdom = require('jsdom');
 const fs = require('fs');
 
 async function jokeOfTheDayTask() {
-    const task = cron.schedule('15 7 * * *', async () => {
+   // const task = cron.schedule('15 7 * * *', async () => {
         const htmlBody = await bot.getData('http://blague.dumatin.fr/');
 
         const { JSDOM } = jsdom;
@@ -27,13 +27,12 @@ async function jokeOfTheDayTask() {
 
         bot.client.channels.get('554923621643190279').send(`:poop:   Joke of the day !   :joy:   =>   ${title}\n\n${joke}`);
         bot.client.channels.get('546711751672987674').send(`:poop:   Joke of the day !   :joy:   =>   ${title}\n\n${joke}`);
-    });
-
-    task.start();
+   // });
+   // task.start();
 }
 
 async function compareSchedulesTask() {
-    const task = cron.schedule('*/30 6-17 * * *', async () => {
+   // const task = cron.schedule('*/30 6-17 * * *', async () => {
         const data = fs.readFileSync('./app/data/schedules.json');
         const savedData = JSON.parse(data);
 
@@ -71,19 +70,19 @@ async function compareSchedulesTask() {
 
             save2WeekInLocalData();
         }
-    });
+   // });
 
-    task.start();
+    //task.start();
 }
 
 async function saveDataTask() {
     save2WeekInLocalData();
 
-    const task = cron.schedule('0 3 * * *', async () => {
+   /* const task = cron.schedule('0 3 * * *', async () => {
         save2WeekInLocalData();
     });
 
-    task.start();
+    task.start();*/
 }
 
 async function tomorrowScheduleTask() {
