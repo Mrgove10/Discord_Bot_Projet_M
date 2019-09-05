@@ -21,9 +21,8 @@ client.on("ready", () => {
   console.log(`Bot has started, with ${client.users.size} users, in ${client.channels.size} channels of ${client.guilds.size} guilds.`);
 
   //Met a jour le playing whit au lancement
-  client.user.setActivity(`Hacker le bank`);
+  //client.user.setActivity(`Hacker le bank`);
 
-  //#region 
   //envoie automatique (https://www.npmjs.com/package/node-schedule)
 
   //envoie automatique du matin
@@ -44,11 +43,10 @@ client.on("ready", () => {
   });
 
   //changement automatique du playing whit
-  schedule.scheduleJob('* * * 5 * *', function () {
+  schedule.scheduleJob('* 5 * * * *', function () {
     var id = makeid();
     var idd = makeid();
     client.user.setActivity(id + ` Hacker le bank ` + idd); //met a jour le "playing whit"
-    console.log(makeid());
   });
 
   scheduledTask.jokeOfTheDayTask();
@@ -56,7 +54,6 @@ client.on("ready", () => {
   scheduledTask.compareSchedulesTask();
   scheduledTask.tomorrowScheduleTask();
   scheduledTask.todayScheduleTask();
-  //#endregion
 });
 
 //for each message
