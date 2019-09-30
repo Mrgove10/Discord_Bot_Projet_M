@@ -37,8 +37,7 @@ async function jokeOfTheDayTask () {
 }
 
 async function compareSchedulesTask () {
-    //'*/30 6-17 * * *'
-    const task = cron.schedule('*/2 * * * *', async () => {
+    const task = cron.schedule('*/30 6-17 * * *', async () => {
         const data = fs.readFileSync('app/data/schedules.json');
         const savedData = JSON.parse(data);
 
