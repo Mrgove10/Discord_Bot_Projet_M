@@ -46,7 +46,7 @@ async function compareSchedulesTask () {
 
         schedule = await getEpsiSchedule('week');
         schedule.push(await getEpsiSchedule('nextweek'));
-        
+
         const indexOfDataChange = [];
         for (let i = 0; i < savedData.length; i++) {
             if (JSON.stringify(savedData[i]) !== JSON.stringify(schedule[i])) {
@@ -65,10 +65,10 @@ async function compareSchedulesTask () {
                 const splittedMsg = bot.splitMessage(msg);
 
                 splittedMsg.forEach(str => {
-                    bot.client.channels.get('546711751672987674').send(`@everyone Changement dans l'emplois du temps !\n\n${str}`);
+                    bot.client.channels.get('387249474625601537').send(`@everyone Changement dans l'emplois du temps !\n\n${str}`);
                 })
             } else {
-                bot.client.channels.get('546711751672987674').send(`@everyone Changement dannt dans l'emplois du temps !\n\n${msg}`);
+                bot.client.channels.get('387249474625601537').send(`@everyone Changement dannt dans l'emplois du temps !\n\n${msg}`);
             }
 
             save2WeekInLocalData();

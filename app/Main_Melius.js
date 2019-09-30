@@ -53,6 +53,8 @@ client.on("ready", () => {
   scheduledTask.jokeOfTheDayTask();
   scheduledTask.saveDataTask();
   scheduledTask.compareSchedulesTask();
+  scheduledTask.tomorrowScheduleTask()
+  scheduledTask.todayScheduleTask()
   //#endregion
 });
 
