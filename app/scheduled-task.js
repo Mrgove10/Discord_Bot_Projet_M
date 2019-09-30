@@ -46,7 +46,7 @@ async function compareSchedulesTask () {
 
         schedule = await getEpsiSchedule('week');
         schedule.push(await getEpsiSchedule('nextweek'));
-        
+
         const indexOfDataChange = [];
         for (let i = 0; i < savedData.length; i++) {
             if (JSON.stringify(savedData[i]) !== JSON.stringify(schedule[i])) {
@@ -65,10 +65,10 @@ async function compareSchedulesTask () {
                 const splittedMsg = bot.splitMessage(msg);
 
                 splittedMsg.forEach(str => {
-                    bot.client.channels.get('546711751672987674').send(`@everyone Changement dans l'emplois du temps !\n\n${str}`);
+                    bot.client.channels.get('387249474625601537').send(`@everyone Changement dans l'emplois du temps !\n\n${str}`);
                 })
             } else {
-                bot.client.channels.get('546711751672987674').send(`@everyone Changement dannt dans l'emplois du temps !\n\n${msg}`);
+                bot.client.channels.get('387249474625601537').send(`@everyone Changement dannt dans l'emplois du temps !\n\n${msg}`);
             }
 
             save2WeekInLocalData();
@@ -107,6 +107,46 @@ async function getEpsiSchedule(date) {
     return schedule
 }
 
+async function tomorrowScheduleTask() {
+    const task = cron.schedule('30 7 * * *', async () => {
+        let schedule = await getEpsiSchedule('tomorrow')
+        let msg = '';
+
+        if(schedule.length > 0) {
+          schedule.forEach(item => {
+            msg += `${item.date} : **${item.matiere}** de __${item.debut}__ à __${item.fin}__ en salle __${item.salle}__ avec **${item.prof}**\n`;
+          })
+
+          bot.client.channels.get('387249474625601537').send(msg);
+        } else {
+          bot.client.channels.get('387249474625601537').send('Auncun cours prévue !');
+        }
+    })
+
+    task.start();
+}
+
+async function todayScheduleTask() {
+    const task = cron.schedule('0 21 * * *', async () => {
+        let schedule = await getEpsiSchedule('today')
+        let msg = '';
+
+        if(schedule.length > 0) {
+          schedule.forEach(item => {
+            msg += `${item.date} : **${item.matiere}** de __${item.debut}__ à __${item.fin}__ en salle __${item.salle}__ avec **${item.prof}**\n`;
+          })
+
+          bot.client.channels.get('387249474625601537').send(msg);
+        } else {
+          bot.client.channels.get('387249474625601537').send('Auncun cours prévue !');
+        }
+    })
+
+    task.start();
+}
+
 module.exports.jokeOfTheDayTask = jokeOfTheDayTask;
 module.exports.saveDataTask = saveDataTask;
 module.exports.compareSchedulesTask = compareSchedulesTask;
+module.exports.tomorrowScheduleTask = tomorrowScheduleTask;
+module.exports.todayScheduleTask = todayScheduleTask;
