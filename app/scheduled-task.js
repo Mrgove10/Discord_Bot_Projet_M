@@ -5,6 +5,7 @@ moment.locale('fr');
 const cron = require('node-cron');
 const jsdom = require('jsdom');
 const fs = require('fs');
+const request = require('request-promise-native');
 
 async function jokeOfTheDayTask () {
     const task = cron.schedule('15 7 * * *', async () => {
@@ -36,19 +37,19 @@ async function jokeOfTheDayTask () {
 }
 
 async function compareSchedulesTask () {
-    const task = cron.schedule('*/30 6-17 * * *', async () => {
-        const data = fs.readFileSync('./app/data/schedules.json');
+    //'*/30 6-17 * * *'
+    const task = cron.schedule('*/2 * * * *', async () => {
+        const data = fs.readFileSync('app/data/schedules.json');
         const savedData = JSON.parse(data);
 
-        let schedule = { 'data': [] };
-        const today = moment();
+        let schedule;
 
-        schedule = await fetchData(today.clone(), today.weekday(), schedule);
-        schedule = await fetchData(today.clone().weekday(7), 0, schedule);
-
+        schedule = await getEpsiSchedule('week');
+        schedule.push(await getEpsiSchedule('nextweek'));
+        
         const indexOfDataChange = [];
-        for (let i = 0; i < savedData.data.length; i++) {
-            if (JSON.stringify(savedData.data[i]) !== JSON.stringify(schedule.data[i])) {
+        for (let i = 0; i < savedData.length; i++) {
+            if (JSON.stringify(savedData[i]) !== JSON.stringify(schedule[i])) {
                 indexOfDataChange.push(i);
             }
         }
@@ -56,22 +57,18 @@ async function compareSchedulesTask () {
         if (indexOfDataChange.length !== 0) {
             let msg = '';
             indexOfDataChange.forEach(index => {
-                msg += `Ancien cours : ${savedData.data[index].lessonDate} : **${savedData.data[index].matiere}** de __${savedData.data[index].debut}__ à __${savedData.data[index].fin}__ en salle __${savedData.data[index].salle}__ avec **${savedData.data[index].prof}**\n`;
-                msg += `Nouveau cours : ${schedule.data[index].lessonDate} : **${schedule.data[index].matiere}** de __${schedule.data[index].debut}__ à __${schedule.data[index].fin}__ en salle __${schedule.data[index].salle}__ avec **${schedule.data[index].prof}**\n\n`;
+                msg += `Ancien cours : ${savedData[index].date} : **${savedData[index].matiere}** de __${savedData[index].debut}__ à __${savedData[index].fin}__ en salle __${savedData[index].salle}__ avec **${savedData[index].prof}**\n`;
+                msg += `Nouveau cours : ${schedule[index].date} : **${schedule[index].matiere}** de __${schedule[index].debut}__ à __${schedule[index].fin}__ en salle __${schedule[index].salle}__ avec **${schedule[index].prof}**\n\n`;
             });
 
             if (msg.length > 2000) {
                 const splittedMsg = bot.splitMessage(msg);
 
-                bot.client.channels.forEach(channel => {
-                    if (channel.type === 'text') {
-                        splittedMsg.forEach(str => {
-                            bot.client.channels.get(channel.id).send(`@everyone Changement dans l'emplois du temps !\n\n${str}`);
-                        });
-                    }
+                splittedMsg.forEach(str => {
+                    bot.client.channels.get('546711751672987674').send(`@everyone Changement dans l'emplois du temps !\n\n${str}`);
                 })
             } else {
-                bot.client.channels.get(channel.id).send(`@everyone Changement dans l'emplois du temps !\n\n${msg}`);
+                bot.client.channels.get('546711751672987674').send(`@everyone Changement dannt dans l'emplois du temps !\n\n${msg}`);
             }
 
             save2WeekInLocalData();
@@ -92,62 +89,22 @@ async function saveDataTask () {
 }
 
 async function save2WeekInLocalData () {
-    let schedule = { 'data': [] };
+    let schedule;
 
-    const today = moment();
-    schedule = await fetchData(today.clone(), today.weekday(), schedule);
-    schedule = await fetchData(today.clone().weekday(7), 0, schedule);
+    schedule = await getEpsiSchedule('week');
+    schedule.push(await getEpsiSchedule('nextweek'));
     const writeData = JSON.stringify(schedule);
-    fs.writeFile('./app/data/schedules.json', writeData, () => {
-        console.log('Successful saving schedule!');
+    fs.writeFile('app/data/schedules.json', writeData, (error) => {
+        error ? console.log(error) : console.log('Successful saving schedule!');
     });
 }
 
-async function fetchData (date, dayOfWeek, schedule) {
-    for (let j = dayOfWeek; j < 5; j++) {
-        date.weekday(j);
-        const url = bot.getUrl(date.date(), date.month() + 1, date.year());
-        const htmlBody = await bot.getData(url);
 
-        schedule = fetchDomElement(schedule, htmlBody, date);
-    }
-
-    return schedule;
-}
-
-function fetchDomElement (schedule, htmlBody, date) {
-    const { JSDOM } = jsdom;
-    const dom = new JSDOM(htmlBody);
-    const $ = (require('jquery'))(dom.window);
-
-    let dayOfWeek = moment(date).format('dddd');
-    dayOfWeek = bot.firstLetterToUpper(dayOfWeek);
-    let month = moment(date).format('MMMM');
-    month = bot.firstLetterToUpper(month);
-
-    const tab = $('.Ligne');
-
-    for (let k = 0; k < tab.length; k++) {
-        schedule.data.push(
-            {
-                'lessonDate': `${dayOfWeek} ${date.date()} ${month}`,
-                'matiere': $($(tab[k]).find('.Matiere')).html(),
-                'debut': $($(tab[k]).find('.Debut')).html(),
-                'fin': $($(tab[k]).find('.Fin')).html(),
-                'prof': $($(tab[k]).find('.Prof')).html(),
-                'salle': $($(tab[k]).find('.Salle')).html()
-            });
-    }
-
-    if (tab.length === 0) {
-        schedule.data.push(
-            {
-                'lessonDate': `${dayOfWeek} ${date.date()} ${month}`,
-                'matiere': 'Aucun cours'
-            });
-    }
-
-    return schedule;
+async function getEpsiSchedule(date) {
+    const url = `http://eclisson.duckdns.org:3000/schedule/${date}`
+    let schedule = await request(url, {method: 'GET'})
+    schedule = JSON.parse(schedule);
+    return schedule
 }
 
 module.exports.jokeOfTheDayTask = jokeOfTheDayTask;
