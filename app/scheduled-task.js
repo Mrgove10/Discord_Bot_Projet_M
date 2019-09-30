@@ -107,6 +107,46 @@ async function getEpsiSchedule(date) {
     return schedule
 }
 
+async function tomorrowScheduleTask() {
+    const task = cron.schedule('30 7 * * *', async () => {
+        let schedule = await getEpsiSchedule('tomorrow')
+        let msg = '';
+
+        if(schedule.length > 0) {
+          schedule.forEach(item => {
+            msg += `${item.date} : **${item.matiere}** de __${item.debut}__ à __${item.fin}__ en salle __${item.salle}__ avec **${item.prof}**\n`;
+          })
+
+          bot.client.channels.get('387249474625601537').send(msg);
+        } else {
+          bot.client.channels.get('387249474625601537').send('Auncun cours prévue !');
+        }
+    })
+
+    task.start();
+}
+
+async function todayScheduleTask() {
+    const task = cron.schedule('0 21 * * *', async () => {
+        let schedule = await getEpsiSchedule('today')
+        let msg = '';
+
+        if(schedule.length > 0) {
+          schedule.forEach(item => {
+            msg += `${item.date} : **${item.matiere}** de __${item.debut}__ à __${item.fin}__ en salle __${item.salle}__ avec **${item.prof}**\n`;
+          })
+
+          bot.client.channels.get('387249474625601537').send(msg);
+        } else {
+          bot.client.channels.get('387249474625601537').send('Auncun cours prévue !');
+        }
+    })
+
+    task.start();
+}
+
 module.exports.jokeOfTheDayTask = jokeOfTheDayTask;
 module.exports.saveDataTask = saveDataTask;
 module.exports.compareSchedulesTask = compareSchedulesTask;
+module.exports.tomorrowScheduleTask = tomorrowScheduleTask;
+module.exports.todayScheduleTask = todayScheduleTask;
