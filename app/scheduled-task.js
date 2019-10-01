@@ -8,8 +8,7 @@ const fs = require('fs');
 const request = require('request-promise-native');
 
 async function jokeOfTheDayTask () {
-    //'15 7 * * *'
-    const task = cron.schedule('*/1 * * * *', async () => {
+    const task = cron.schedule('15 7 * * *', async () => {
         const htmlBody = await bot.getData('http://blague.dumatin.fr/');
 
         const { JSDOM } = jsdom;
@@ -104,8 +103,7 @@ async function getEpsiSchedule(date) {
 }
 
 async function tomorrowScheduleTask() {
-    //45 21 * * *
-    const task = cron.schedule('*/1 * * * *', async () => {
+    const task = cron.schedule('45 21 * * *', async () => {
         let schedule = await getEpsiSchedule('tomorrow')
         let msg = '';
 
@@ -124,7 +122,7 @@ async function tomorrowScheduleTask() {
 }
 
 async function todayScheduleTask() {
-    const task = cron.schedule('*/1 * * * *', async () => {
+    const task = cron.schedule('30 7 * * *', async () => {
         let schedule = await getEpsiSchedule('today')
         let msg = '';
 
