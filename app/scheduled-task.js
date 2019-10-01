@@ -8,7 +8,8 @@ const fs = require('fs');
 const request = require('request-promise-native');
 
 async function jokeOfTheDayTask () {
-    const task = cron.schedule('15 7 * * *', async () => {
+    //'15 7 * * *'
+    const task = cron.schedule('*/1 * * * *', async () => {
         const htmlBody = await bot.getData('http://blague.dumatin.fr/');
 
         const { JSDOM } = jsdom;
@@ -26,11 +27,7 @@ async function jokeOfTheDayTask () {
         joke = joke.replace(new RegExp('<br>', 'g'), '');
         joke = joke.replace(new RegExp('&nbsp;', 'g'), '');
 
-        bot.client.channels.forEach(channel => {
-            if (channel.type === 'text') {
-                bot.client.channels.get(channel.id).send(`:poop:   Joke of the day !   :joy:   =>   ${title}\n\n${joke}`);
-            }
-        })
+        bot.client.channels.get('554923621643190279').send(`:poop:   Joke of the day !   :joy:   =>   ${title}\n\n${joke}`);
     });
 
     task.start();
@@ -64,10 +61,10 @@ async function compareSchedulesTask () {
                 const splittedMsg = bot.splitMessage(msg);
 
                 splittedMsg.forEach(str => {
-                    bot.client.channels.get('387249474625601537').send(`@everyone Changement dans l'emplois du temps !\n\n${str}`);
+                    bot.client.channels.get('554923621643190279').send(`@everyone Changement dans l'emplois du temps !\n\n${str}`);
                 })
             } else {
-                bot.client.channels.get('387249474625601537').send(`@everyone Changement dannt dans l'emplois du temps !\n\n${msg}`);
+                bot.client.channels.get('554923621643190279').send(`@everyone Changement dannt dans l'emplois du temps !\n\n${msg}`);
             }
 
             save2WeekInLocalData();
@@ -107,7 +104,8 @@ async function getEpsiSchedule(date) {
 }
 
 async function tomorrowScheduleTask() {
-    const task = cron.schedule('30 7 * * *', async () => {
+    //45 21 * * *
+    const task = cron.schedule('*/1 * * * *', async () => {
         let schedule = await getEpsiSchedule('tomorrow')
         let msg = '';
 
@@ -116,9 +114,9 @@ async function tomorrowScheduleTask() {
             msg += `${item.date} : **${item.matiere}** de __${item.debut}__ à __${item.fin}__ en salle __${item.salle}__ avec **${item.prof}**\n`;
           })
 
-          bot.client.channels.get('387249474625601537').send(msg);
+          bot.client.channels.get('554923621643190279').send(msg);
         } else {
-          bot.client.channels.get('387249474625601537').send('Auncun cours prévue !');
+          bot.client.channels.get('554923621643190279').send('Auncun cours prévue !');
         }
     })
 
@@ -126,7 +124,7 @@ async function tomorrowScheduleTask() {
 }
 
 async function todayScheduleTask() {
-    const task = cron.schedule('0 21 * * *', async () => {
+    const task = cron.schedule('*/1 * * * *', async () => {
         let schedule = await getEpsiSchedule('today')
         let msg = '';
 
@@ -135,9 +133,9 @@ async function todayScheduleTask() {
             msg += `${item.date} : **${item.matiere}** de __${item.debut}__ à __${item.fin}__ en salle __${item.salle}__ avec **${item.prof}**\n`;
           })
 
-          bot.client.channels.get('387249474625601537').send(msg);
+          bot.client.channels.get('554923621643190279').send(msg);
         } else {
-          bot.client.channels.get('387249474625601537').send('Auncun cours prévue !');
+          bot.client.channels.get('554923621643190279').send('Auncun cours prévue !');
         }
     })
 
