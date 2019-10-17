@@ -34,7 +34,7 @@ async function jokeOfTheDayTask () {
 
 async function compareSchedulesTask () {
     const task = cron.schedule('*/30 6-17 * * *', async () => {
-        const data = fs.readFileSync('app/data/schedules.json');
+        const data = fs.readFileSync('data/schedules.json');
         const savedData = JSON.parse(data);
 
         let schedule;
@@ -89,7 +89,7 @@ async function save2WeekInLocalData () {
     schedule = await getEpsiSchedule('week');
     schedule.push(await getEpsiSchedule('nextweek'));
     const writeData = JSON.stringify(schedule);
-    fs.writeFile('app/data/schedules.json', writeData, (error) => {
+    fs.writeFile('data/schedules.json', writeData, (error) => {
         error ? console.log(error) : console.log('Successful saving schedule!');
     });
 }
