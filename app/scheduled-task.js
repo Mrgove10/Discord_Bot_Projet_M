@@ -1,4 +1,4 @@
-const bot = require('./Main_Melius');
+/*const bot = require('./Main_Melius');
 const moment = require('moment');
 moment.locale('fr');
 
@@ -31,10 +31,10 @@ async function jokeOfTheDayTask() {
 
     task.start();
 }
-
-async function compareSchedulesTask() {
-    const task = cron.schedule('*/30 6-17 * * *', async () => {
-        const data = fs.readFileSync('./app/data/schedules.json');
+*/
+//async function compareSchedulesTask() {
+ //   const task = cron.schedule('*/30 6-17 * * *', async () => {
+  /*      const data = fs.readFileSync('./app/data/schedules.json');
         const savedData = JSON.parse(data);
 
         let schedule = { 'data': [] };
@@ -183,3 +183,4 @@ module.exports.saveDataTask = saveDataTask;
 module.exports.compareSchedulesTask = compareSchedulesTask;
 module.exports.tomorrowScheduleTask = tomorrowScheduleTask;
 module.exports.todayScheduleTask = todayScheduleTask;
+*/

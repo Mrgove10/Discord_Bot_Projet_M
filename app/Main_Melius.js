@@ -38,7 +38,7 @@ client.on("ready", () => {
   //envoie automatique tous les mecredi
   schedule.scheduleJob('0 15 8 * * 3', function () {
     client.channels.get("387249474625601537").send("", {
-      file: "./app/media/wednesday.jpg" // 
+      file: "./media/wednesday.jpg" 
     });
   });
 
