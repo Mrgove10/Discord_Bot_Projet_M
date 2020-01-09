@@ -50,11 +50,11 @@ client.on("ready", () => {
     console.log(makeid());
   });
 
-  scheduledTask.jokeOfTheDayTask();
+  /*scheduledTask.jokeOfTheDayTask();
   scheduledTask.saveDataTask();
   scheduledTask.compareSchedulesTask();
   scheduledTask.tomorrowScheduleTask()
-  scheduledTask.todayScheduleTask()
+  scheduledTask.todayScheduleTask()*/
   //#endregion
 });
 
