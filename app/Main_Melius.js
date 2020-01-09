@@ -3,13 +3,12 @@ const Discord = require("discord.js");
 const schedule = require('node-schedule');
 
 //Files
-const phraseObj = require("./phrase.json")
+const phraseObj = require("./phrase.json") 
 const config = require("./config.json");
 const JsonPackage = require('.././package.json');
 const client = new Discord.Client();
 
 const scheduledTask = require('./scheduled-task');
-const jsdom = require('jsdom');
 const request = require('request-promise-native');
 const moment = require('moment');
 moment.locale('fr');
@@ -21,15 +20,16 @@ client.on("ready", () => {
   console.log(`Bot has started, with ${client.users.size} users, in ${client.channels.size} channels of ${client.guilds.size} guilds.`);
 
   //Met a jour le playing whit au lancement
-  //client.user.setActivity(`Hacker le bank`);
+  client.user.setActivity(`Hacker le bank`); 
 
+  //#region 
   //envoie automatique (https://www.npmjs.com/package/node-schedule)
 
   //envoie automatique du matin
   schedule.scheduleJob('0 55 7 * * *', function () {
     client.channels.get("387249474625601537").send(`euhhh oui, Bonjour, bonne chournéé`);
   });
-
+  
   //envoie automatique du soir
   schedule.scheduleJob('0 45 21 * * *', function () {
     client.channels.get("387249474625601537").send('euhhh oui, Bonne nuit, demain caféé douceur');
@@ -43,40 +43,42 @@ client.on("ready", () => {
   });
 
   //changement automatique du playing whit
-  schedule.scheduleJob('* 5 * * * *', function () {
+  schedule.scheduleJob('* * * 5 * *', function () {
     var id = makeid();
     var idd = makeid();
     client.user.setActivity(id + ` Hacker le bank ` + idd); //met a jour le "playing whit"
+    console.log(makeid());
   });
 
   scheduledTask.jokeOfTheDayTask();
   scheduledTask.saveDataTask();
   scheduledTask.compareSchedulesTask();
-  scheduledTask.tomorrowScheduleTask();
-  scheduledTask.todayScheduleTask();
+  scheduledTask.tomorrowScheduleTask()
+  scheduledTask.todayScheduleTask()
+  //#endregion
 });
 
 //for each message
 client.on("message", async message => {
   //Debug
   if (!message.author.bot) { //if the message is not from the bot
-    console.log("Message recu : " + message.content);
+    console.log("Message recu : " + message.content); 
   }
 
   //emoji oui
   var Emoji_Oui = message.guild.emojis.find(x => x.name === "oui");
-
+  
   //si le bot est mentionner il repond oui ou non
   if (message.isMentioned(client.users.get('494062611810484224'))) {
-    var rep = ["euhhh oui", "euhhh non", "euhhh peut-etre"];
+    var rep = ["euhhh oui", "euhhh non", "euhhh peut-etre" ];
     message.reply(rep[getRandomInt(3)]);
   }
 
   //si le message est vide
-  if (message.author.bot) return;
+  //if (message.author.bot) return;
 
   // si la commande c'est pas au debut
-  if (message.content.indexOf(config.prefix) !== 0) return;
+  //if (message.content.indexOf(config.prefix) !== 0) return;
 
   //recupere les arguments puis la met en minucule
   const args = message.content.slice('2').trim().split(/ +/g);
@@ -153,27 +155,19 @@ client.on("message", async message => {
     `)
   }
 
-  const today = moment();
-  let date;
-  let msg = '';
-
   switch (message.content) {
     case '/m today':
-      processForOneFixedDay(today, msg, message);
+        console.log('today')
+      getEpsiSchedule('today', message)
       break;
     case '/m tomorrow':
-      date = today.clone();
-      date.date(date.date() + 1);
-      processForOneFixedDay(date, msg, message);
+      getEpsiSchedule('tomorrow', message)
       break;
     case '/m week':
-      date = today.clone();
-      processForAWeekFixedDate(date, msg, message);
+      getEpsiSchedule('week', message)
       break;
     case '/m nextweek':
-      date = today.clone();
-      date.weekday(7);
-      processForAWeekFixedDate(date, msg, message);
+        getEpsiSchedule('nextweek', message)
       break;
     case '/m infos':
       message.channel.send('Ce bot discord à pour objectif d\'éviter au __maximum__ d\'utiliser ce fabuleux outil qu\'est ~~je vous pisse dessus sans même vous faire croire qu\'il pleut~~ BEECOME.\n\nCe que je sais faire :\n\n/m today\n/m tomorrow\n/m week\n/m nextweek\n/m infos\n\nJe vous préviens également de chaque changement dans l\'emplois du temps sur les 2 prochaines semaines !   :muscle::muscle:\nAlors, elle est pas belle la vie ?   :heart_eyes:\n\nJe suis __open source__ ! : Github https://github.com/MiniJez/Discord-bot-displaying-epsi-calendar-changes\nAuteur : Edouard CLISSON.');
@@ -223,53 +217,32 @@ function makeid() {
   return text;
 }
 
-//Functions relative to epsi calendar behavior
-async function getData(url) {
-  return request(url);
-}
+async function getEpsiSchedule(date, message) {
+  const url = `http://eclisson.duckdns.org:3000/schedule/${date}`
+  let schedule = await request(url, {method: 'GET'});
+  schedule = JSON.parse(schedule)
+  let msg = ''
 
-function getLessonInfos(htmlBody, msg, date) {
-  const { JSDOM } = jsdom;
-  const dom = new JSDOM(htmlBody);
-  const $ = (require('jquery'))(dom.window);
-  let dayOfWeek = moment(date).format('dddd');
-  dayOfWeek = firstLetterToUpper(dayOfWeek);
-  let month = moment(date).format('MMMM');
-  month = firstLetterToUpper(month);
+  if(schedule.length > 0) {
+    schedule.forEach(item => {
+      msg += `${item.date} : **${item.matiere}** de __${item.debut}__ à __${item.fin}__ en salle __${item.salle}__ avec **${item.prof}**\n`;
+    })
 
-  const tab = $('.Ligne');
-
-  for (let i = 0; i < tab.length; i++) {
-    var dateLesson = `${dayOfWeek} ${date.date()} ${month}`;
-    const matiere = $($(tab[i]).find('.Matiere')).html();
-    const debut = $($(tab[i]).find('.Debut')).html();
-    const fin = $($(tab[i]).find('.Fin')).html();
-    const prof = $($(tab[i]).find('.Prof')).html();
-    const salle = $($(tab[i]).find('.Salle')).html();
-
-    msg += `${dateLesson} : **${matiere}** de __${debut}__ à __${fin}__ en salle __${salle}__ avec **${prof}**\n`;
+    sendMessage(message, msg)
+  } else {
+    sendMessage(message, 'Aucun cours prévue !')
   }
-
-  if (tab.length === 0) {
-    msg += `${dayOfWeek} ${date.date()} ${month} : Aucun cours prévu !\n`;
-  }
-
-  return msg;
 }
 
-function getUrl(day, month, year) {
-  return `http://edtmobilite.wigorservices.net/WebPsDyn.aspx?Action=posETUD&serverid=i&tel=edouard.clisson&date=${month}/${day}/${year}%208:00`;
-}
-
-function sendMessage(message, msg) {
+function sendMessage (message, msg) {
   message.channel.send(msg);
 }
 
-function firstLetterToUpper(string) {
+function firstLetterToUpper (string) {
   return string.charAt(0).toUpperCase() + string.slice(1);
 }
 
-function splitMessage(msg) {
+function splitMessage (msg) {
   const halfLength = Math.floor(msg.length / 2);
   const startMsg = msg.slice(0, halfLength);
   const endMsg = msg.slice(halfLength, msg.length);
@@ -282,36 +255,13 @@ function splitMessage(msg) {
   return splittedMsg;
 }
 
-async function processForOneFixedDay(date, msg, message) {
-  const url = getUrl(date.date(), date.month() + 1, date.year());
-  const htmlBody = await getData(url);
-  msg = getLessonInfos(htmlBody, msg, date);
-
-  sendMessage(message, msg);
+async function getData (url) {
+  return request(url);
 }
 
-async function processForAWeekFixedDate(date, msg, message) {
-  for (let i = 0; i < 5; i++) {
-    date.weekday(i);
-    const url = getUrl(date.date(), date.month() + 1, date.year());
-    const htmlBody = await getData(url);
-    msg = getLessonInfos(htmlBody, msg, date) + '\n';
-  }
 
-  if (msg.length > 2000) {
-    const splittedMsg = splitMessage(msg);
-
-    splittedMsg.forEach(str => {
-      sendMessage(message, str);
-    });
-  } else {
-    sendMessage(message, msg);
-  }
-}
 
 module.exports.client = client;
 module.exports.getData = getData;
-module.exports.getUrl = getUrl;
-module.exports.getLessonInfos = getLessonInfos;
 module.exports.firstLetterToUpper = firstLetterToUpper;
 module.exports.splitMessage = splitMessage;
