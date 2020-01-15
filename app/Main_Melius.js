@@ -155,7 +155,7 @@ client.on("message", async message => {
     `)
   }
 
-  switch (message.content) {
+  /*switch (message.content) {
     case '/m today':
         console.log('today')
       getEpsiSchedule('today', message)
@@ -171,7 +171,7 @@ client.on("message", async message => {
       break;
     case '/m infos':
       message.channel.send('Ce bot discord à pour objectif d\'éviter au __maximum__ d\'utiliser ce fabuleux outil qu\'est ~~je vous pisse dessus sans même vous faire croire qu\'il pleut~~ BEECOME.\n\nCe que je sais faire :\n\n/m today\n/m tomorrow\n/m week\n/m nextweek\n/m infos\n\nJe vous préviens également de chaque changement dans l\'emplois du temps sur les 2 prochaines semaines !   :muscle::muscle:\nAlors, elle est pas belle la vie ?   :heart_eyes:\n\nJe suis __open source__ ! : Github https://github.com/MiniJez/Discord-bot-displaying-epsi-calendar-changes\nAuteur : Edouard CLISSON.');
-  }
+  }*/
 });
 
 //Logins the client
@@ -217,7 +217,7 @@ function makeid() {
   return text;
 }
 
-async function getEpsiSchedule(date, message) {
+/*async function getEpsiSchedule(date, message) {
   const url = `http://eclisson.duckdns.org:3000/schedule/${date}`
   let schedule = await request(url, {method: 'GET'});
   schedule = JSON.parse(schedule)
@@ -232,7 +232,7 @@ async function getEpsiSchedule(date, message) {
   } else {
     sendMessage(message, 'Aucun cours prévue !')
   }
-}
+}*/
 
 function sendMessage (message, msg) {
   message.channel.send(msg);
